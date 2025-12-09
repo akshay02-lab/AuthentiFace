@@ -1,0 +1,17 @@
+﻿date,time,email,decision,reason,avg_live,avg_spoof,raw_live,raw_spoof,emotion
+2025-12-06,17:01:40,,granted,client_rule: live,0.8194,0.1806,0.8528,0.1472,Sadness
+2025-12-06,17:07:14,akshay.dhoni02@gmail.com,denied,client_rule: spoof,0.3010,0.6990,0.2622,0.7378,Disgust
+2025-12-06,17:08:36,aisrutileka@gmail.com,granted,client_rule: live,0.7224,0.2776,0.7863,0.2137,Anger
+2025-12-06,17:09:23,sasa@s,granted,client_rule: live,0.8007,0.1993,0.8090,0.1910,Neutral
+2025-12-06,20:55:44,aisrutileka@gmail.com,granted,client_rule: live,0.7168,0.2832,0.7271,0.2729,Anger
+2025-12-06,20:58:30,aisrutileka@gmail.com,denied,client_rule: spoof,0.3073,0.6927,0.3196,0.6804,Neutral
+2025-12-06,20:58:57,aisrutileka@gmail.com,denied,client_rule: spoof,0.4884,0.5116,0.5184,0.4816,Neutral
+2025-12-06,20:59:59,unknown_user,denied,client_rule: spoof,0.3551,0.6449,0.3166,0.6834,Disgust
+2025-12-06,21:00:31,unknown_user,granted,client_rule: live,0.7622,0.2378,0.7324,0.2676,Neutral
+2025-12-06,21:01:00,unknown_user,granted,client_rule: live,0.7739,0.2261,0.8242,0.1758,Surprise
+2025-12-08,23:14:44,ssuresh0@umd.edu,granted,client_rule: live,0.7382,0.2618,0.7185,0.2815,Anger
+2025-12-08,23:14:54,ssuresh0@umd.edu,granted,client_rule: live,0.7999,0.2001,0.7551,0.2449,Neutral
+2025-12-08,23:15:06,ssuresh0@umd.edu,granted,client_rule: live,0.8075,0.1925,0.7927,0.2073,Sadness
+2025-12-08,23:15:17,ssuresh0@umd.edu,granted,client_rule: live,0.8341,0.1659,0.8313,0.1687,Sadness
+2025-12-08,23:23:26,ssuresh0@umd.edu,granted,client_rule: live,0.7256,0.2744,0.7647,0.2353,Sadness
+2025-12-08,23:23:53,akshay02@umd.edu,denied,client_rule: spoof,0.2605,0.7395,0.2960,0.7040,Fear
