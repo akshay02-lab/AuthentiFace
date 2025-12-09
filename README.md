@@ -1,6 +1,19 @@
-AuthentiFace – Summary
+#AuthentiFace 
 
 AuthentiFace is a real-time authentication system that uses micro-expression analysis and liveness detection to secure face-based logins. It introduces a dual-head Vision Transformer capable of predicting both emotional state and live/spoof status from the same shared backbone.
+##Dataset Download 
+
+1. RAF-DB – Real-world Affective Faces Dataset
+
+https://www.kaggle.com/datasets/ashishpatel26/raf-db
+
+2. SAMM v1 – Micro-Expression Dataset
+
+https://www.kaggle.com/datasets/sajidshahriar/samm-v1-micro-expression-dataset
+
+3. CelebA-Spoof – Face Anti-Spoofing Dataset
+
+https://www.kaggle.com/datasets/kpvisionlab/celeb-a-spoof-dataset
 
 ## Problem Summary
 Traditional face authentication is vulnerable to:
@@ -82,6 +95,7 @@ Trains the liveness head for presentation attack detection.
 - Accuracy: 80%
 - Macro F1: 0.7985
 - Reliable across emotion categories
+  
 
 ## System Challenges
 - Integrating datasets with different structures
