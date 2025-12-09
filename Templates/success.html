@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Login Successful</title>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #065f46, #022c22);
+            color: #ecfdf5;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: rgba(6, 78, 59, 0.96);
+            padding: 28px 34px;
+            border-radius: 18px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.45);
+            text-align: center;
+            max-width: 460px;
+            border: 1px solid rgba(74, 222, 128, 0.6);
+            backdrop-filter: blur(16px);
+        }
+        h1 {
+            margin-bottom: 8px;
+            color: #bbf7d0;
+            font-size: 24px;
+        }
+        p {
+            margin: 6px 0;
+        }
+        .user {
+            font-size: 14px;
+            color: #a7f3d0;
+            margin-bottom: 6px;
+        }
+        .email {
+            font-weight: 600;
+            color: #ecfdf5;
+        }
+        .emotion {
+            margin-top: 18px;
+            font-size: 14px;
+            color: #d1fae5;
+        }
+        .emotion span.label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #6ee7b7;
+        }
+        .emotion span.value {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 20px;
+            color: #a5f3fc;
+            font-weight: 600;
+        }
+        .emoji {
+            font-size: 22px;
+        }
+        .small {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #a7f3d0;
+        }
+    </style>
+</head>
+<body>
+
+{% set em = emotion or "Unknown" %}
+{% if em == "Happiness" %}
+    {% set emoji = "😄" %}
+{% elif em == "Sadness" %}
+    {% set emoji = "😢" %}
+{% elif em == "Anger" %}
+    {% set emoji = "😡" %}
+{% elif em == "Surprise" %}
+    {% set emoji = "😮" %}
+{% elif em == "Fear" %}
+    {% set emoji = "😨" %}
+{% elif em == "Disgust" %}
+    {% set emoji = "🤢" %}
+{% elif em == "Neutral" %}
+    {% set emoji = "😐" %}
+{% else %}
+    {% set emoji = "🙂" %}
+{% endif %}
+
+<div class="box">
+    <h1>Login successful ✓</h1>
+
+    <div class="user">
+        Signed in as <span class="email">{{ email or "user@example.com" }}</span>
+    </div>
+
+    <p>Your liveness has been verified.</p>
+
+    <div class="emotion">
+        <span class="label">Emotion detected during verification</span>
+        <span class="value">
+            {{ em }}
+            <span class="emoji">{{ emoji }}</span>
+        </span>
+    </div>
+
+    <div class="small">
+        Redirecting to your secure dashboard… (conceptually 😄)
+    </div>
+</div>
+
+</body>
+</html>

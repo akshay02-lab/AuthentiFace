@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Access Denied</title>
+    <style>
+        body {
+            background: radial-gradient(circle at top, #7f1d1d, #111827);
+            color: #fee2e2;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .box {
+            background: rgba(127, 29, 29, 0.96);
+            padding: 28px 34px;
+            border-radius: 18px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.45);
+            text-align: center;
+            max-width: 460px;
+            border: 1px solid rgba(248, 113, 113, 0.7);
+            backdrop-filter: blur(16px);
+        }
+        h1 {
+            margin-bottom: 8px;
+            color: #fecaca;
+            font-size: 24px;
+        }
+        p {
+            margin: 6px 0;
+        }
+        .user {
+            font-size: 14px;
+            color: #fecaca;
+            margin-bottom: 6px;
+        }
+        .email {
+            font-weight: 600;
+            color: #fee2e2;
+        }
+        .emotion {
+            margin-top: 18px;
+            font-size: 14px;
+            color: #fee2e2;
+        }
+        .emotion span.label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #fecaca;
+        }
+        .emotion span.value {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 20px;
+            color: #f9a8d4;
+            font-weight: 600;
+        }
+        .emoji {
+            font-size: 22px;
+        }
+        .small {
+            margin-top: 16px;
+            font-size: 13px;
+            color: #fecaca;
+        }
+    </style>
+</head>
+<body>
+
+{% set em = emotion or "Unknown" %}
+{% if em == "Happiness" %}
+    {% set emoji = "😄" %}
+{% elif em == "Sadness" %}
+    {% set emoji = "😢" %}
+{% elif em == "Anger" %}
+    {% set emoji = "😡" %}
+{% elif em == "Surprise" %}
+    {% set emoji = "😮" %}
+{% elif em == "Fear" %}
+    {% set emoji = "😨" %}
+{% elif em == "Disgust" %}
+    {% set emoji = "🤢" %}
+{% elif em == "Neutral" %}
+    {% set emoji = "😐" %}
+{% else %}
+    {% set emoji = "🙂" %}
+{% endif %}
+
+<div class="box">
+    <h1>Access denied ✗</h1>
+
+    <div class="user">
+        Email: <span class="email">{{ email or "user@example.com" }}</span>
+    </div>
+
+    <p>Your liveness check did not pass our security rules.</p>
+
+    <div class="emotion">
+        <span class="label">Emotion detected during attempt</span>
+        <span class="value">
+            {{ em }}
+            <span class="emoji">{{ emoji }}</span>
+        </span>
+    </div>
+
+    <div class="small">
+        If this wasn't you, please secure your account and try again.
+    </div>
+</div>
+
+</body>
+</html>

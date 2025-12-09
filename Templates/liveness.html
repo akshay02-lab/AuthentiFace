@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Liveness Check</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at top, #1f2933, #0b1016);
+            color: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 900px;
+            max-width: 95vw;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 18px;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            padding: 24px 28px 28px;
+            display: grid;
+            grid-template-columns: 2fr 1.4fr;
+            gap: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .left, .right {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        h1 span.tag {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.12);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .username {
+            font-weight: 600;
+            color: #e5e7eb;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            background: #020617;
+        }
+
+        .status-pill {
+            position: absolute;
+            left: 14px;
+            top: 12px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+        }
+
+        .dot-live {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+        }
+
+        .dot-spoof {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+        }
+
+        .dot-unsure {
+            background: #eab308;
+            box-shadow: 0 0 8px rgba(234, 179, 8, 0.7);
+        }
+
+        .prob-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: 12px;
+            border: 1px solid rgba(55, 65, 81, 0.8);
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .prob-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .prob-label {
+            color: #9ca3af;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .prob-value {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .badge-live { color: #4ade80; }
+        .badge-spoof { color: #fca5a5; }
+        .badge-unsure { color: #fde68a; }
+
+        .right h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .bar-wrapper {
+            width: 100%;
+            height: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(31, 41, 55, 0.9);
+        }
+
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.25s ease-out;
+        }
+
+        .bar-fill-live {
+            background: linear-gradient(to right, #22c55e, #4ade80);
+        }
+
+        .bar-fill-spoof {
+            background: linear-gradient(to right, #ef4444, #f97373);
+        }
+
+        .info-block {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #9ca3af;
+            border-top: 1px dashed rgba(55, 65, 81, 0.9);
+            padding-top: 10px;
+        }
+
+        .info-block code {
+            font-size: 11px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid rgba(55, 65, 81, 0.9);
+        }
+
+        .danger-text {
+            color: #fca5a5;
+        }
+
+        .ok-text {
+            color: #bbf7d0;
+        }
+
+        .center-msg {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 8px;
+            color: #e5e7eb;
+        }
+
+        .center-msg span {
+            color: #7dd3fc;
+        }
+
+        .small-muted {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="left">
+        <div>
+            <h1>
+                Liveness Verification
+                <span class="tag">Step 2 · Face Authentication</span>
+            </h1>
+            <div class="subtitle">
+                Logged in as
+                <span class="username">{{ email or "guest@example.com" }}</span>.  
+                Please look at the camera naturally — no need to exaggerate expressions.
+            </div>
+        </div>
+
+        <div class="video-wrapper">
+            <div class="status-pill" id="status-pill">
+                <span class="dot dot-unsure" id="status-dot"></span>
+                <span id="status-text">Status: Initializing…</span>
+            </div>
+            <video id="video" autoplay playsinline></video>
+        </div>
+
+        <div class="prob-panel">
+            <div class="prob-group">
+                <div class="prob-label">Raw model output</div>
+                <div class="prob-value">
+                    <span class="badge-live">P(live): <span id="p-live">0.00</span></span> ·
+                    <span class="badge-spoof">P(spoof): <span id="p-spoof">0.00</span></span>
+                </div>
+            </div>
+            <div class="prob-group">
+                <div class="prob-label">Smoothed avg (last 15)</div>
+                <div class="prob-value">
+                    <span class="badge-live">avg P(live): <span id="avg-live">0.00</span></span> ·
+                    <span class="badge-spoof">avg P(spoof): <span id="avg-spoof">0.00</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="right">
+        <div>
+            <h2>Authentication progress</h2>
+            <div class="hint">
+                We’re checking if the face in front of the camera is a <b>live human</b> and not a
+                printed photo or screen replay.
+            </div>
+        </div>
+
+        <div>
+            <div class="bar-label">
+                <span>Live confidence window</span>
+                <span><span id="live-seconds">0.0</span>s / 3.5s</span>
+            </div>
+            <div class="bar-wrapper">
+                <div class="bar-fill bar-fill-live" id="live-bar"></div>
+            </div>
+        </div>
+
+        <div>
+            <div class="bar-label">
+                <span> Spoof confidence window</span>
+                <span><span id="spoof-seconds">0.0</span>s / 3.0s</span>
+            </div>
+            <div class="bar-wrapper">
+                <div class="bar-fill bar-fill-spoof" id="spoof-bar"></div>
+            </div>
+        </div>
+
+        <div class="info-block">
+            <div>
+                Current rules:
+            </div>
+            <ul>
+                <li>
+                    If <code>avg P(live) ≥ 0.70</code> for <span class="ok-text">3.5 seconds</span> straight → <b>Access Granted</b>.
+                </li>
+                <li>
+                    If <code>avg P(live) ≤ 0.50</code> for <span class="danger-text">3.0 seconds</span> straight → <b>Access Denied</b>.
+                </li>
+                <li>
+                    Anything in between is treated as <code>unsure</code> and resets the timers.
+                </li>
+            </ul>
+        </div>
+
+        <div class="center-msg">
+            Tip: keep your <span>face centered</span> and don’t cover it with your hands or objects.
+        </div>
+        <div class="small-muted">
+            Press <b>Esc</b> or close the tab to cancel.
+        </div>
+    </div>
+</div>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+<script>
+    const USEREMAIL = "{{ email or '' }}";
+    const USERNAME = USEREMAIL;  // Use email as identity label
+
+    // Once a decision is made (granted/denied), stop sending frames and logging
+    let decisionFinalized = false;
+
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+
+    const pLiveSpan = document.getElementById("p-live");
+    const pSpoofSpan = document.getElementById("p-spoof");
+    const avgLiveSpan = document.getElementById("avg-live");
+    const avgSpoofSpan = document.getElementById("avg-spoof");
+
+    const statusText = document.getElementById("status-text");
+    const statusDot = document.getElementById("status-dot");
+
+    const liveBar = document.getElementById("live-bar");
+    const spoofBar = document.getElementById("spoof-bar");
+    const liveSecondsSpan = document.getElementById("live-seconds");
+    const spoofSecondsSpan = document.getElementById("spoof-seconds");
+
+    // thresholds and windows
+    const HISTORY_LEN = 15;
+    const LIVE_HIGH_THR = 0.7; // ≥ 0.7 → live
+    const LIVE_LOW_THR  = 0.5; // ≤ 0.5 → spoof
+
+    const LIVE_REQUIRED_SEC   = 3.5;
+    const SPOOF_REQUIRED_SEC  = 3.0;
+
+    const FRAME_INTERVAL_MS = 300;
+
+    let liveHistory = [];
+    let lastTimestamp = null;
+    let liveAccum = 0;
+    let spoofAccum = 0;
+    let currentStatus = "unsure"; // "live" | "spoof" | "unsure"
+
+    // To send to backend log
+    let lastEmotion = "Unknown";
+    let lastRawLive = 0.0;
+    let lastRawSpoof = 0.0;
+    let lastAvgLive = 0.0;
+    let lastAvgSpoof = 0.0;
+
+    function setStatus(newStatus) {
+        currentStatus = newStatus;
+        statusDot.classList.remove("dot-live", "dot-spoof", "dot-unsure");
+        if (newStatus === "live") {
+            statusDot.classList.add("dot-live");
+            statusText.textContent = "Status: Live face detected";
+        } else if (newStatus === "spoof") {
+            statusDot.classList.add("dot-spoof");
+            statusText.textContent = "Status: Possible spoof detected";
+        } else {
+            statusDot.classList.add("dot-unsure");
+            statusText.textContent = "Status: Analyzing…";
+        }
+    }
+
+    async function updateTimers(status) {
+        // If we've already decided, do nothing
+        if (decisionFinalized) return;
+
+        const now = performance.now() / 1000.0;
+        if (lastTimestamp === null) {
+            lastTimestamp = now;
+            return;
+        }
+        const dt = now - lastTimestamp;
+        lastTimestamp = now;
+
+        if (status === "live") {
+            liveAccum += dt;
+            spoofAccum = 0;
+        } else if (status === "spoof") {
+            spoofAccum += dt;
+            liveAccum = 0;
+        } else {
+            liveAccum = 0;
+            spoofAccum = 0;
+        }
+
+        liveAccum = Math.min(liveAccum, LIVE_REQUIRED_SEC);
+        spoofAccum = Math.min(spoofAccum, SPOOF_REQUIRED_SEC);
+
+        liveSecondsSpan.textContent = liveAccum.toFixed(1);
+        spoofSecondsSpan.textContent = spoofAccum.toFixed(1);
+
+        liveBar.style.width = `${(liveAccum / LIVE_REQUIRED_SEC) * 100}%`;
+        spoofBar.style.width = `${(spoofAccum / SPOOF_REQUIRED_SEC) * 100}%`;
+
+        // final decisions (edge-triggered)
+        if (liveAccum >= LIVE_REQUIRED_SEC && !decisionFinalized) {
+            decisionFinalized = true;
+
+            try {
+                await fetch("/api/log_live", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: USEREMAIL,
+                        avg_live: lastAvgLive,
+                        avg_spoof: lastAvgSpoof,
+                        raw_live: lastRawLive,
+                        raw_spoof: lastRawSpoof,
+                        emotion: lastEmotion,
+                    }),
+                });
+            } catch (err) {
+                console.error("Error calling /api/log_live:", err);
+            }
+
+            const url = `/success?email=${encodeURIComponent(USEREMAIL)}&emotion=${encodeURIComponent(lastEmotion)}`;
+            window.location.href = url;
+
+        } else if (spoofAccum >= SPOOF_REQUIRED_SEC && !decisionFinalized) {
+            decisionFinalized = true;
+
+            try {
+                await fetch("/api/log_spoof", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        email: USEREMAIL,
+                        avg_live: lastAvgLive,
+                        avg_spoof: lastAvgSpoof,
+                        raw_live: lastRawLive,
+                        raw_spoof: lastRawSpoof,
+                        emotion: lastEmotion,
+                    }),
+                });
+            } catch (err) {
+                console.error("Error calling /api/log_spoof:", err);
+            }
+
+            const url = `/denied?email=${encodeURIComponent(USEREMAIL)}&emotion=${encodeURIComponent(lastEmotion)}`;
+            window.location.href = url;
+        }
+    }
+
+    async function sendFrame() {
+        // If we've already decided, stop sending frames
+        if (decisionFinalized) return;
+
+        if (video.readyState !== HTMLMediaElement.HAVE_ENOUGH_DATA) {
+            return;
+        }
+
+        const w = video.videoWidth;
+        const h = video.videoHeight;
+        if (!w || !h) return;
+
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, w, h);
+
+        const dataURL = canvas.toDataURL("image/jpeg", 0.7);
+
+        try {
+            const res = await fetch("/api/liveness", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: dataURL }),
+            });
+
+            const data = await res.json();
+
+            if (data.error) {
+                pLiveSpan.textContent = "0.00";
+                pSpoofSpan.textContent = "1.00";
+                liveHistory.push(0.0);
+                lastRawLive = 0.0;
+                lastRawSpoof = 1.0;
+                lastEmotion = "Unknown";
+            } else {
+                const pLive = data.prob_live ?? 0.0;
+                const pSpoof = data.prob_spoof ?? 0.0;
+                const emotion = data.emotion ?? "Unknown";
+
+                pLiveSpan.textContent = pLive.toFixed(2);
+                pSpoofSpan.textContent = pSpoof.toFixed(2);
+
+                liveHistory.push(pLive);
+
+                lastRawLive = pLive;
+                lastRawSpoof = pSpoof;
+                lastEmotion = emotion;
+            }
+
+            if (liveHistory.length > HISTORY_LEN) {
+                liveHistory = liveHistory.slice(-HISTORY_LEN);
+            }
+
+            // compute smoothed avg
+            let avgLive = 0.0;
+            if (liveHistory.length > 0) {
+                const sum = liveHistory.reduce((a, b) => a + b, 0);
+                avgLive = sum / liveHistory.length;
+            }
+            const avgSpoof = 1.0 - avgLive;
+
+            lastAvgLive = avgLive;
+            lastAvgSpoof = avgSpoof;
+
+            avgLiveSpan.textContent = avgLive.toFixed(2);
+            avgSpoofSpan.textContent = avgSpoof.toFixed(2);
+
+            // apply hysteresis
+            let status = "unsure";
+            if (avgLive >= LIVE_HIGH_THR) {
+                status = "live";
+            } else if (avgLive <= LIVE_LOW_THR) {
+                status = "spoof";
+            } else {
+                status = "unsure";
+            }
+
+            setStatus(status);
+            await updateTimers(status);
+
+        } catch (err) {
+            console.error("Error calling /api/liveness:", err);
+        }
+    }
+
+    async function startCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: "user" },
+                audio: false,
+            });
+            video.srcObject = stream;
+        } catch (err) {
+            console.error("Error accessing webcam:", err);
+            statusText.textContent = "Unable to access webcam.";
+        }
+    }
+
+    startCamera();
+    setStatus("unsure");
+    setInterval(sendFrame, FRAME_INTERVAL_MS);
+</script>
+</body>
+</html>
+
