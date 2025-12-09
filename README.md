@@ -1,7 +1,7 @@
 # AuthentiFace 
 
 AuthentiFace is a real-time authentication system that uses micro-expression analysis and liveness detection to secure face-based logins. It introduces a dual-head Vision Transformer capable of predicting both emotional state and live/spoof status from the same shared backbone.
-##Dataset Download 
+## Dataset Download 
 
 1. RAF-DB – Real-world Affective Faces Dataset
 
